@@ -204,17 +204,21 @@ function animate(ctx) {
     {
        if(Math.random() <= animChance && _getPixel(ctx, i, j) != _getPixel(ctx, i - 1, j))
        {
-          _setPixel(ctx, i - 1, j, _getPixel(ctx, i ,j));
-          _setPixel(ctx, i, j, _getPixel(ctx, i - 1, j));
-          i++;
-          j++;
+         const centerPixel = _getPixel(ctx, i, j);
+         const leftPixel = _getPixel(ctx, i - 1, j);
+        _setPixel(ctx, i - 1, j, centerPixel);
+        _setPixel(ctx, i, j, leftPixel);
+        i++;
+        j++;
        }
        else if(Math.random() <= animChance && _getPixel(ctx, i, j) != _getPixel(ctx, i, j - 1))
        {
-          _setPixel(ctx, i, j - 1, _getPixel(ctx, i, j));
-          _setPixel(ctx, i, j, _getPixel(ctx, i, j - 1));
-          i++;
-          j++;
+         const centerPixel = _getPixel(ctx, i, j);
+         const topPixel = _getPixel(ctx, i, j - 1);
+        _setPixel(ctx, i, j - 1, centerPixel);
+        _setPixel(ctx, i, j, topPixel);
+        i++;
+        j++;
        }
     }
   }
