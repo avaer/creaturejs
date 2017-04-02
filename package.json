@@ -18,6 +18,10 @@
   "homepage": "https://github.com/modulesio/creaturejs#readme",
   "dependencies": {
     "alea": "0.0.9",
-    "cache-lru": "^1.0.15"
+    "cache-lru": "^1.0.15",
+    "rollup": "^0.41.6",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-json": "^2.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0"
   }
 }
