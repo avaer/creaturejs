@@ -2,7 +2,7 @@
   "name": "creaturejs",
   "version": "0.0.2",
   "description": "Procedurally generated pixel creatures in JS + HTML canvas",
-  "main": "creature.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/modulesio/creaturejs/issues"
   },
-  "homepage": "https://github.com/modulesio/creaturejs#readme"
+  "homepage": "https://github.com/modulesio/creaturejs#readme",
+  "dependencies": {
+    "alea": "0.0.9",
+    "cache-lru": "^1.0.15"
+  }
 }
