@@ -37,51 +37,49 @@ function makeCreature(seed, {single = false}) {
     const entry = (() => {
       const rng = new Alea(seed);
 
-      function _setPixel(ctx, x, y, c) {
-        let {pixelImageData} = ctx;
-        if (!pixelImageData) {
-          pixelImageData = ctx.createImageData(1,1);
-          ctx.pixelImageData = pixelImageData;
+      function _setPixel(imageData, x, y, c) {
+        const baseIndex = (x + (y * imageData.width)) * 4;
+        imageData.data[baseIndex + 0] = (c >> (8 * 2)) & 0xFF;
+        imageData.data[baseIndex + 1] = (c >> (8 * 1)) & 0xFF;
+        imageData.data[baseIndex + 2] = (c >> (8 * 0)) & 0xFF;
+        imageData.data[baseIndex + 3] = c ? 255 : 0;
+      }
+
+      function _getPixel(imageData, x, y) {
+        const baseIndex = (x + (y * imageData.width)) * 4;
+        const r = imageData.data[baseIndex + 0];
+        const g = imageData.data[baseIndex + 1];
+        const b = imageData.data[baseIndex + 2];
+        const a = imageData.data[baseIndex + 3];
+        return (r << (8 * 2)) | (g << (8 * 1)) | (b << (8 * 0)) | (a << (8 * 3));
+      }
+
+      function getColor32(r, g, b, a) {
+        return r << 16 | g << 8 | b | a << 24;
+      }
+
+      class Color {
+        constructor(r, g, b, a) {
+          this.r = r;
+          this.g = g;
+          this.b = b;
+          this.a = a;
         }
-        const {data} = pixelImageData;
-        data[0] = (c >> (8 * 2)) & 0xFF;
-        data[1] = (c >> (8 * 1)) & 0xFF;
-        data[2] = (c >> (8 * 0)) & 0xFF;
-        data[3] = c ? 255 : 0;
-        ctx.putImageData(pixelImageData, x, y);
-      }
-
-      function _getPixel(ctx, x, y) {
-        const pixelImageData = ctx.getImageData(x, y, 1, 1);
-        const {data} = pixelImageData;
-        const r = data[0];
-        const g = data[1];
-        const b = data[2];
-        const a = data[3];
-        return (a << (8 * 3)) | (r << (8 * 2)) | (g << (8 * 1)) | (b << (8 * 0));
-      }
-
-      function getColor32(alpha, red, green, blue) {
-        return alpha << 24 | red << 16 | green << 8 | blue;
       }
 
       function getRGB(color) {
-        const alpha = color >>> 24;
-        const red = color >> 16 & 255;
-        const green = color >> 8 & 255;
-        const blue = color & 255;
-        return {
-          alpha,
-          red,
-          green,
-          blue,
-        };
+        return new Color(
+          color >> 16 & 255,
+          color >> 8 & 255,
+          color & 255,
+          color >>> 24
+        );
       }
 
-      function HSVtoRGB(h, s, v, alpha = 255) {
+      function HSVtoRGB(h, s, v, a = 255) {
         let result = 0;
         if (s === 0) {
-          result = getColor32(alpha,v * 255,v * 255,v * 255);
+          result = getColor32(v * 255, v * 255, v * 255, a);
         } else {
           h = h / 60;
 
@@ -92,22 +90,22 @@ function makeCreature(seed, {single = false}) {
           let t = v * (1 - s * (1 - f));
           switch (intH) {
              case 0:
-                result = getColor32(alpha,v * 255,t * 255,p * 255);
+                result = getColor32(v * 255, t * 255, p * 255, a);
                 break;
              case 1:
-                result = getColor32(alpha,q * 255,v * 255,p * 255);
+                result = getColor32(q * 255,v * 255,p * 255, a);
                 break;
              case 2:
-                result = getColor32(alpha,p * 255,v * 255,t * 255);
+                result = getColor32(p * 255, v * 255, t * 255, a);
                 break;
              case 3:
-                result = getColor32(alpha,p * 255,q * 255,v * 255);
+                result = getColor32(p * 255, q * 255, v * 255, a);
                 break;
              case 4:
-                result = getColor32(alpha,t * 255,p * 255,v * 255);
+                result = getColor32(t * 255, p * 255, v * 255, a);
                 break;
              case 5:
-                result = getColor32(alpha,v * 255,p * 255,q * 255);
+                result = getColor32(v * 255, p * 255, q * 255, a);
                 break;
              default:
                 throw new Error('FlxColor Error: HSVtoRGB : Unknown color');
@@ -121,12 +119,12 @@ function makeCreature(seed, {single = false}) {
         let saturation = NaN;
 
         const rgb = getRGB(color);
-        const red = rgb.red / 255;
-        const green = rgb.green / 255;
-        const blue = rgb.blue / 255;
+        const r = rgb.r / 255;
+        const g = rgb.g / 255;
+        const b = rgb.b / 255;
 
-        const min = Math.min(red,green,blue);
-        const max = Math.max(red,green,blue);
+        const min = Math.min(r, g, b);
+        const max = Math.max(r, g, b);
         const delta = max - min;
         const lightness = (max + min) / 2;
 
@@ -139,14 +137,14 @@ function makeCreature(seed, {single = false}) {
           } else {
              saturation = delta / (2 - max - min);
           }
-          let delta_r = ((max - red) / 6 + delta / 2) / delta;
-          let delta_g = ((max - green) / 6 + delta / 2) / delta;
-          let delta_b = ((max - blue) / 6 + delta / 2) / delta;
-          if (red === max) {
+          let delta_r = ((max - r) / 6 + delta / 2) / delta;
+          let delta_g = ((max - g) / 6 + delta / 2) / delta;
+          let delta_b = ((max - b) / 6 + delta / 2) / delta;
+          if (r === max) {
              hue = delta_b - delta_g;
-          } else if (green === max) {
+          } else if (g === max) {
              hue = 1 / 3 + delta_r - delta_b;
-          } else if (blue === max) {
+          } else if (b === max) {
              hue = 2 / 3 + delta_g - delta_r;
           }
           if (hue < 0) {
@@ -167,17 +165,17 @@ function makeCreature(seed, {single = false}) {
         };
       }
 
-      function mirror(ctx) {
+      function mirror(imageData) {
         const w = SIZE;
         const h = SIZE;
         for(let iY = 0; iY < h; iY++) {
           for(let iX = w / 2; iX < w; iX++) {
-            _setPixel(ctx, iX, iY, _getPixel(ctx, w - 1 - iX, iY));
+            _setPixel(imageData, iX, iY, _getPixel(imageData, w - 1 - iX, iY));
           }
         }
       }
 
-      function renderMainFrame(ctx) {
+      function renderMainFrame(imageData) {
         const w = SIZE;
         const h = SIZE;
         const color = Math.floor(rng() * _2_32);
@@ -196,15 +194,15 @@ function makeCreature(seed, {single = false}) {
              c.value = 1 - dist;
              show = HSVtoRGB(c.hue,c.saturation,c.value);
              if (rng() >= dist) {
-                _setPixel(ctx, i, j, show);
+                _setPixel(imageData, i, j, show);
              }
           }
         }
 
-        mirror(ctx);
+        mirror(imageData);
       }
 
-      function renderAltFrame(ctx) {
+      function renderAltFrame(imageData) {
         let animChance = 1;
 
         const w = SIZE;
@@ -213,25 +211,25 @@ function makeCreature(seed, {single = false}) {
 
         for (let i = 1; i < halfw; i++) {
           for (let j = 1; j < h - 1; j++) {
-            if (rng() <= animChance && _getPixel(ctx, i, j) !== _getPixel(ctx, i - 1, j)) {
-               const centerPixel = _getPixel(ctx, i, j);
-               const leftPixel = _getPixel(ctx, i - 1, j);
-              _setPixel(ctx, i - 1, j, centerPixel);
-              _setPixel(ctx, i, j, leftPixel);
+            if (rng() <= animChance && _getPixel(imageData, i, j) !== _getPixel(imageData, i - 1, j)) {
+               const centerPixel = _getPixel(imageData, i, j);
+               const leftPixel = _getPixel(imageData, i - 1, j);
+              _setPixel(imageData, i - 1, j, centerPixel);
+              _setPixel(imageData, i, j, leftPixel);
               i++;
               j++;
-            } else if (rng() <= animChance && _getPixel(ctx, i, j) !== _getPixel(ctx, i, j - 1)) {
-               const centerPixel = _getPixel(ctx, i, j);
-               const topPixel = _getPixel(ctx, i, j - 1);
-              _setPixel(ctx, i, j - 1, centerPixel);
-              _setPixel(ctx, i, j, topPixel);
+            } else if (rng() <= animChance && _getPixel(imageData, i, j) !== _getPixel(imageData, i, j - 1)) {
+               const centerPixel = _getPixel(imageData, i, j);
+               const topPixel = _getPixel(imageData, i, j - 1);
+              _setPixel(imageData, i, j - 1, centerPixel);
+              _setPixel(imageData, i, j, topPixel);
               i++;
               j++;
             }
           }
         }
 
-        mirror(ctx);
+        mirror(imageData);
       }
 
       const canvas = document.createElement('canvas');
@@ -241,12 +239,16 @@ function makeCreature(seed, {single = false}) {
       canvas.style.height = 64;
       canvas.style.imageRendering = 'pixelated';
       const ctx = canvas.getContext('2d');
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-      renderMainFrame(ctx);
-      const mainFrame = _cloneCanvas(canvas);
+      renderMainFrame(imageData);
+      ctx.putImageData(imageData, 0, 0);
 
       if (!single) {
-        renderAltFrame(ctx)
+        const mainFrame = _cloneCanvas(canvas);
+
+        renderAltFrame(imageData)
+        ctx.putImageData(imageData, 0, 0);
         const altFrame = canvas;
 
         return [mainFrame, altFrame];
