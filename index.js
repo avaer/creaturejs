@@ -26,10 +26,10 @@ function _cloneEntry(entry) {
   }
 }
 
-function makeCreature(seed, {single = false}) {
+function makeCreature(seed, format) {
   seed = seed || String(Math.random());
 
-  const key = seed + ':' + single;
+  const key = seed + ':' + format;
   const entry = cache.get(key);
   if (entry) {
     return _cloneEntry(entry);
@@ -244,7 +244,7 @@ function makeCreature(seed, {single = false}) {
       renderMainFrame(imageData);
       ctx.putImageData(imageData, 0, 0);
 
-      if (!single) {
+      if (format === 'animated') {
         const mainFrame = _cloneCanvas(canvas);
 
         renderAltFrame(imageData)
@@ -252,8 +252,12 @@ function makeCreature(seed, {single = false}) {
         const altFrame = canvas;
 
         return [mainFrame, altFrame];
-      } else {
+      } else if (format === 'static') {
         return canvas.toDataURL('image/png');
+      } else if (format === 'canvas') {
+        return canvas;
+      } else {
+        return null;
       }
     })();
 
@@ -262,10 +266,12 @@ function makeCreature(seed, {single = false}) {
     return _cloneEntry(entry);
   }
 }
-const makeAnimatedCreature = seed => makeCreature(seed, {single: false});
-const makeStaticCreature = seed => makeCreature(seed, {single: true});
+const makeAnimatedCreature = seed => makeCreature(seed, 'animated');
+const makeStaticCreature = seed => makeCreature(seed, 'static');
+const makeCanvasCreature = seed => makeCreature(seed, 'canvas');
 
 module.exports = {
   makeAnimatedCreature,
   makeStaticCreature,
+  makeCanvasCreature,
 };
