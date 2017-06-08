@@ -1,6 +1,6 @@
 {
   "name": "creaturejs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Procedurally generated pixel creatures in JS + HTML canvas",
   "main": "index.js",
   "scripts": {
