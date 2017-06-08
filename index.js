@@ -21,8 +21,12 @@ function _cloneCanvas(canvas) {
 function _cloneEntry(entry) {
   if (typeof entry === 'string') {
     return entry;
-  } else {
+  } else if (Array.isArray(entry)) {
     return entry.map(_cloneCanvas);
+  } else if (entry.tagName === 'CANVAS') {
+    return _cloneCanvas(entry);
+  } else {
+    return null;
   }
 }
 
