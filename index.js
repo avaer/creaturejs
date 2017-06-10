@@ -251,10 +251,10 @@ function makeCreature(seed, format) {
         for (let y = 0; y < imageData.height; y++) {
           for (let x = 0; x < imageData.width; x++) {
             const baseIndex = (x + (y * imageData.width)) * 4;
-            const r = imageDataData[baseIndex + 0] / 255;
-            const g = imageDataData[baseIndex + 1] / 255;
-            const b = imageDataData[baseIndex + 2] / 255;
-            const a = imageDataData[baseIndex + 3] / 255;
+            const r = imageDataData[baseIndex + 0];
+            const g = imageDataData[baseIndex + 1];
+            const b = imageDataData[baseIndex + 2];
+            const a = imageDataData[baseIndex + 3];
             const colorString = `rgba(${r},${g},${b},${a})`;
 
             let entry = colorHistories[colorString];
@@ -281,7 +281,7 @@ function makeCreature(seed, format) {
             result += `M${x},${y} h1 v1 h-1 z`;
           }
 
-          result += `" />`;
+          result += `"></path>`;
         }
 
         result += '</svg>';
