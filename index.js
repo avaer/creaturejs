@@ -245,7 +245,7 @@ function makeCreature(seed, format, opts) {
 
       function imageDataToSvg(imageData) {
         const width = (opts && opts.width) ? opts.width : '';
-        const width = (opts && opts.height) ? opts.height : '';
+        const height = (opts && opts.height) ? opts.height : '';
         const style = (opts && opts.style) ? opts.style : '';
 
         let result = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ${width ? `width="${width}"` : ''} ${height ? `height="${height}"` : ''} ${style ? `style="${style}"` : ''} shape-rendering="crispEdges">`;
