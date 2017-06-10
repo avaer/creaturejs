@@ -30,7 +30,7 @@ function _cloneEntry(entry) {
   }
 }
 
-function makeCreature(seed, format) {
+function makeCreature(seed, format, opts) {
   seed = seed || String(Math.random());
 
   const key = seed + ':' + format;
@@ -244,7 +244,8 @@ function makeCreature(seed, format) {
       }
 
       function imageDataToSvg(imageData) {
-        let result = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="crispEdges">';
+        const style = opts ? opts.style : '';
+        let result = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="${style}" shape-rendering="crispEdges">`;
 
         const colorHistories = {};
         const {data: imageDataData} = imageData;
@@ -326,10 +327,10 @@ function makeCreature(seed, format) {
     return _cloneEntry(entry);
   }
 }
-const makeAnimatedCreature = seed => makeCreature(seed, 'animated');
-const makeStaticCreature = seed => makeCreature(seed, 'static');
-const makeCanvasCreature = seed => makeCreature(seed, 'canvas');
-const makeSvgCreature = seed => makeCreature(seed, 'svg');
+const makeAnimatedCreature = (seed, opts) => makeCreature(seed, 'animated', opts);
+const makeStaticCreature = (seed, opts) => makeCreature(seed, 'static', opts);
+const makeCanvasCreature = (seed, opts) => makeCreature(seed, 'canvas', opts);
+const makeSvgCreature = (seed, opts) => makeCreature(seed, 'svg', opts);
 
 module.exports = {
   makeAnimatedCreature,
