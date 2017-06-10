@@ -246,9 +246,10 @@ function makeCreature(seed, format, opts) {
       function imageDataToSvg(imageData) {
         const width = (opts && opts.width) ? opts.width : '';
         const height = (opts && opts.height) ? opts.height : '';
+        const viewBox = (opts && opts.viewBox) ? opts.viewBox : '';
         const style = (opts && opts.style) ? opts.style : '';
 
-        let result = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ${width ? `width="${width}"` : ''} ${height ? `height="${height}"` : ''} ${style ? `style="${style}"` : ''} shape-rendering="crispEdges">`;
+        let result = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ${width ? `width="${width}"` : ''} ${height ? `height="${height}"` : ''} ${viewBox ? `viewBox="${viewBox}"` : ''} ${style ? `style="${style}"` : ''} shape-rendering="crispEdges">`;
 
         const colorHistories = {};
         const {data: imageDataData} = imageData;
