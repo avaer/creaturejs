@@ -244,7 +244,7 @@ function makeCreature(seed, format) {
       }
 
       function imageDataToSvg(imageData) {
-        let result = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink shape-rendering="crispEdges">';
+        let result = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="crispEdges">';
 
         const colorHistories = {};
         const {data: imageDataData} = imageData;
