@@ -236,6 +236,59 @@ function makeCreature(seed, format) {
         mirror(imageData);
       }
 
+      class ColorPoint {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+        }
+      }
+
+      function imageDataToSvg(imageData) {
+        let result = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink shape-rendering="crispEdges">';
+
+        const colorHistories = {};
+        const {data: imageDataData} = imageData;
+        for (let y = 0; y < imageData.height; y++) {
+          for (let x = 0; x < imageData.width; x++) {
+            const baseIndex = (x + (y * imageData.width)) * 4;
+            const r = imageDataData[baseIndex + 0] / 255;
+            const g = imageDataData[baseIndex + 1] / 255;
+            const b = imageDataData[baseIndex + 2] / 255;
+            const a = imageDataData[baseIndex + 3] / 255;
+            const colorString = `rgba(${r},${g},${b},${a})`;
+
+            let entry = colorHistories[colorString];
+            if (!entry) {
+              entry = [];
+              colorHistories[colorString] = entry;
+            }
+
+            const colorPoint = new ColorPoint(x, y);
+            entry.push(colorPoint);
+          }
+        }
+        for (const colorString in colorHistories) {
+          const colorPoints = colorHistories[colorString];
+
+          result += `<path fill="${colorString}" d="`;
+
+          for (let i = 0; i < colorPoints.length; i++) {
+            const colorPoint = colorPoints[i];
+            const {x, y} = colorPoint;
+            if (i > 0) {
+              result += ' ';
+            }
+            result += `M${x},${y} h1 v1 h-1 z`;
+          }
+
+          result += `" />`;
+        }
+
+        result += '</svg>';
+
+        return result;
+      }
+
       const canvas = document.createElement('canvas');
       canvas.width = SIZE;
       canvas.height = SIZE;
@@ -244,22 +297,25 @@ function makeCreature(seed, format) {
       canvas.style.imageRendering = 'pixelated';
       const ctx = canvas.getContext('2d');
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
       renderMainFrame(imageData);
-      ctx.putImageData(imageData, 0, 0);
 
       if (format === 'animated') {
-        const mainFrame = _cloneCanvas(canvas);
+        ctx.putImageData(imageData, 0, 0);
 
+        const mainFrame = _cloneCanvas(canvas);
         renderAltFrame(imageData)
         ctx.putImageData(imageData, 0, 0);
         const altFrame = canvas;
 
         return [mainFrame, altFrame];
       } else if (format === 'static') {
+        ctx.putImageData(imageData, 0, 0);
         return canvas.toDataURL('image/png');
       } else if (format === 'canvas') {
+        ctx.putImageData(imageData, 0, 0);
         return canvas;
+      } else if (format === 'svg') {
+        return imageDataToSvg(imageData);
       } else {
         return null;
       }
@@ -273,9 +329,11 @@ function makeCreature(seed, format) {
 const makeAnimatedCreature = seed => makeCreature(seed, 'animated');
 const makeStaticCreature = seed => makeCreature(seed, 'static');
 const makeCanvasCreature = seed => makeCreature(seed, 'canvas');
+const makeSvgCreature = seed => makeCreature(seed, 'svg');
 
 module.exports = {
   makeAnimatedCreature,
   makeStaticCreature,
   makeCanvasCreature,
+  makeSvgCreature,
 };
