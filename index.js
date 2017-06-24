@@ -270,7 +270,9 @@ function makeCreature(seed, format, opts) {
         ctx.putImageData(imageData, 0, 0);
         return canvas;
       } else if (format === 'svg') {
-        return svgize.imageDataToSvg(imageData);
+        return svgize.imageDataToSvg(imageData, {
+          style: opts ? opts.style : undefined,
+        });
       } else {
         return null;
       }
