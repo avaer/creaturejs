@@ -18,7 +18,8 @@
   "homepage": "https://github.com/modulesio/creaturejs#readme",
   "dependencies": {
     "alea": "0.0.9",
-    "cache-lru": "^1.0.15"
+    "cache-lru": "^1.0.15",
+    "svgize": "0.0.1"
   },
   "devDependencies": {
     "rollup": "^0.41.6",
