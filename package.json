@@ -19,7 +19,7 @@
   "dependencies": {
     "alea": "0.0.9",
     "cache-lru": "^1.0.15",
-    "svgize": "0.0.2"
+    "svgize": "0.0.3"
   },
   "devDependencies": {
     "rollup": "^0.41.6",

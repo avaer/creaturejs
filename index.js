@@ -237,13 +237,6 @@ function makeCreature(seed, format, opts) {
         mirror(imageData);
       }
 
-      class ColorPoint {
-        constructor(x, y) {
-          this.x = x;
-          this.y = y;
-        }
-      }
-
       const canvas = document.createElement('canvas');
       canvas.width = SIZE;
       canvas.height = SIZE;
